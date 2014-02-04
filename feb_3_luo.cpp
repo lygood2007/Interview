@@ -38,7 +38,7 @@ int recurFindKth(int a[], int left, int right, int k) {
     if(pivotIndex == k - 1){
         return a[pivotIndex];
     } else if(k - 1 > pivotIndex){
-        return recurFindKth(a, pivotIndex + 1, right, k - pivotIndex - 1);
+        return recurFindKth(a, pivotIndex + 1, right, k);
     } else {
         return recurFindKth(a, left, pivotIndex - 1, k);
     }
@@ -52,10 +52,18 @@ int findKth(int a[], int n, int k) {
 int main(int argc, const char * argv[])
 {
     
-    int a[] = {3,1,2,1,4};
-    int x = findKth(a, 5, 3);
+    int a[] = {6,4,1,3,5,2,10,9,7,8};
+    cout<<findKth(a, 10, 1);
+    cout<<findKth(a, 10, 2);
+    cout<<findKth(a, 10, 3);
+    cout<<findKth(a, 10, 4);
+    cout<<findKth(a, 10, 5);
+    cout<<findKth(a, 10, 6);
+    cout<<findKth(a, 10, 7);
+    cout<<findKth(a, 10, 8);
+    cout<<findKth(a, 10, 9);
+    cout<<findKth(a, 10, 10);
     
-    cout<<x;
     return 0;
 }
 
