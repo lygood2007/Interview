@@ -10,7 +10,7 @@
 #include <vector>
 
 using namespace std;
-
+// Big O: O(n)
 struct Interval
 {
     int start;
