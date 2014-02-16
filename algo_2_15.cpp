@@ -1,124 +1,105 @@
 //
 //  main.cpp
-//  algo 2.14
+//  Algo_2.14
 //
-//  Created by Yan on 2/13/14.
+//  Created by Yan on 2/15/14.
 //  Copyright (c) 2014 Yan. All rights reserved.
 //
 
 #include <iostream>
-#include <unordered_set>
 #include <vector>
+
 using namespace std;
 
-class Pair
+int partition(vector<int>& array, int start, int end)
 {
-public:
-    int x;
-    int y;
-    Pair(int _x, int _y)
-    {
-        x = _x;
-        y = _y;
-    }
-};
-class Hash
-{
-public:
-    bool operator()(const Pair&p) const
-    {
-        return 1;
-    }
-};
-
-class HashComp
-{
-public:
-    bool operator()(const Pair&p1, const Pair& p2)const
-    {
-        return (p1.x == p2.x && p1.y == p2.y)||(p1.x == p2.y &&p2.x == p1.y);
-    }
-};
-
-void merge(vector<int>& list, int s, int e, unordered_set<Pair, Hash, HashComp>& pair, int k)
-{
-    vector<int> list2(list.begin()+s, list.begin()+e+1);
+    int random = rand()%(end-start+1)+start;
     
-    int mid = (e-s)/2;
-    int n1 = 0;
-    int n2 = mid+1;
-    int n = s;
+    int pivot = array[random];
     
-    while(n1 <= mid&&n2 <= e-s)
+    swap(array[random], array[start]);
+    
+    int last_sorted = start;
+    for(int i = start+1; i <= end; i++)
     {
-        if(list2[n1] + list2[n2] <= k)
+        if(array[i]<pivot)
         {
-            pair.insert(Pair(list2[n1], list2[n2]));
+            last_sorted++;
+            swap(array[i],array[last_sorted]);
         }
-        if(list2[n1]<list2[n2])
+    }
+    swap(array[last_sorted], array[start]);
+    return last_sorted;
+}
+
+
+int findKth(vector<int>& array, int start, int end, int k)
+{
+    if(start<end)
+    {
+        int p = partition(array, start, end);
+        if(p == k)
         {
-            list[n] = list2[n1];
-            n1++;
+            return array[p];
+        }else if(p > k)
+        {
+            return findKth(array, start, p-1, k);
         }else
         {
-            list[n] = list2[n2];
-            n2++;
+            return findKth(array, p+1, end, k);
         }
-        n++;
-    }
-    while(n1 <= mid)
+    }else if(start == end && start == k)
     {
-        for(int i = mid+1; i<=e; i++)
-        {
-            if(list2[n1] + list2[i]<=k)
-                pair.insert(Pair(list2[i],list2[n1]));
-           
-        }
-        list[n++] = list2[n1++];
-    }
-    
-    while(n2 <= e-s)
-    {
-        for(int i = 0; i<=mid; i++)
-        {
-            if(list2[n2] + list2[i]<=k)
-                pair.insert(Pair(list2[i],list2[n2]));
-           
-        }
-        list[n++] = list2[n2++];
-    }
-}
-void mergefind(vector<int>& list, unordered_set<Pair, Hash, HashComp>& pair, int s, int e, int k)
-{
-    if(s >= e)
-    {
-        return;
+        return array[start];
     }else
     {
-        int mid = (s+e)/2;
-        mergefind(list, pair, s, mid, k);
-        mergefind(list, pair, mid+1, e, k);
-        merge(list, s, e,pair, k);
+        return -1;
     }
+}
+
+vector<int> getCorrectA(vector<int>& A, vector<int>& B)
+{
+    vector<int> result = A;
+    
+    for(int i = A.size()-1; i>=0; i--)
+    {
+        int rank = i-B[i];
+        int kth = findKth(result, 0, i, rank);
+        if(kth != A[i])
+        {
+            // find where the kth value is.
+            // this part can be incorporated in findKth.
+            
+            int kthPos = 0;
+            int j;
+            for(j = 0; j <= i; j++)
+            {
+                if(kth == result[j])
+                {
+                    break;
+                }
+            }
+            swap(result[i],result[j]);
+        }
+    }
+    return result;
 }
 
 
 int main(int argc, const char * argv[])
 {
-    unordered_set<Pair, Hash, HashComp> p;
-    int q[] = {8,1,0};
-    vector<int> qq(q, q+sizeof(q)/sizeof(int));
-    mergefind(qq, p, 0, qq.size()-1, 30);
-    int i = 0;
-    for(unordered_set<Pair, Hash, HashComp>::iterator it = p.begin(); it != p.end(); it++)
+    int p[] = {2,3,4,5,1};
+    vector<int> A(p, p+sizeof(p)/sizeof(int));
+    int q[] = {0,0,0,1,3};
+    vector<int> B(q, q+sizeof(q)/sizeof(int));
+    
+    vector<int> ret = getCorrectA(A, B);
+    // correct result should be 13542
+    for(int i = 0; i < ret.size(); i++)
     {
-        cout<<"<"<<it->x <<" "<<it->y<<">"<<endl;
-        i++;
+        cout<<ret[i]<<" ";
     }
     
-    cout<<"num:"<<i;
-    // insert code here...
-    std::cout << "Hello, World!\n";
     return 0;
 }
 
